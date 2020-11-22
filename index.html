@@ -1,0 +1,303 @@
+<!-- - tábla elkészítése
+- hajók megrajzolása (1 4-es, 2 3-as, 3 2-es és 4 1-es)
+- hajók random elhelyezése
+- a hajók nem fedhetik egymást!
+
+Továbbfejlesztési lehetőségek:
+- maximalizálni a lépések számát
+- ne csalhasson a játékos, ha egy talát hajóra még max. 19-szer rákattint, akkor is nyer
+ -->
+
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <title>L'Attaque</title>
+  <style type="text/css">
+  body
+  {
+    background-color: white;
+  }
+  table
+  {
+    border: 1px solid gray;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+  }
+  td
+  {
+    border: 1px solid gray;
+  }
+  .cell
+  {
+    height: 3em;
+    width: 3em;
+    background-color: white;
+  }
+  div{
+    margin: 4rem;
+    text-align: center;
+  }
+  p{
+    padding-bottom: 0.5rem;;
+  }
+  h3{
+    background-color: red;
+    color: white;
+    width: 10rem;
+    padding: 2rem; 
+    margin: auto;
+    text-align: center;
+
+  }
+  </style>
+</head>
+<body>
+  <div id="info"></div>
+  <table id="board"></table>
+<script type="text/javascript">
+const Figure =
+  {
+  battleship:
+  `####`,
+  cruiser:
+  `###`,
+  destroyer:
+  `##`,
+  ship:
+  `#`,
+  };
+ 
+const Battleship =
+{
+ cells: new Map(),
+
+ waterColor: 'blue',
+ sinkColor: 'white',
+ talalat: 0,
+
+ mkBoard:
+ function( x, y, id )
+ {
+  let out = '';
+  for( let r = 0; r < y; r++ )
+  {
+    out += '<tr>';
+    for( let c = 0; c < x; c++ )
+    {
+      out += `<td class="cell" id="${c},${r}" onclick="Battleship.chState(this);"></td>`;
+    }
+    out += '</tr>';
+  }
+  document.getElementById( id ).innerHTML = out;
+  },
+     
+
+ 
+ boat:
+ function( x, y, string )
+ {
+  let c = x;
+  let r = y;
+  string.split(';').forEach( function( row )
+  {
+    [ ... row ].forEach( function( e )
+    {
+      if( e == '#' ) Battleship.cells.set( [ c, r ].join(','), 1 );
+      c++;
+
+    } );
+    r++;
+    c = x;
+    
+  } );
+  Battleship.showCells( Battleship.cells );
+ },
+ 
+ 
+ showCells:
+ function( map )
+ {
+  let ref;
+  for( const [ id, val ] of map )
+  {
+    if( ref = document.getElementById( id ))
+    {
+      ref.style.backgroundColor = Battleship.sinkColor;
+    }
+  }
+ },
+ 
+
+  chState:
+  function (ref)
+ {
+    let x, y;
+    [ x, y ] = ref.id.split(',');
+    Battleship.frTorpedo( +x, +y );
+ },
+
+ 
+
+ frTorpedo:
+ function ( x, y )
+ {
+   let ref = document.getElementById( [ x, y ].join(',') );
+   
+   if( !ref ) return;
+
+   if( Battleship.cells.get( [ x, y ].join(',') ) == 1 )
+   {
+     ref.style.backgroundColor = 'black';
+     Battleship.talalat++;
+
+     if ( Battleship.talalat == 20)
+     {
+      document.getElementById('info').innerHTML += '<h3>You winn!</h3>'
+     } 
+   }
+   
+   else
+   {
+     ref.style.backgroundColor = 'blue';
+   }   
+  },
+
+};
+
+Battleship.mkBoard( 10, 10, "board" );
+putBship();
+
+function putBship( shiptype )
+{  
+ switch (Math.floor(Math.random() * 10)) {
+  case 1:
+    Battleship.boat( 0, 0, Figure['battleship']);
+    Battleship.boat( 1, 7, Figure['cruiser']);
+    Battleship.boat( 2, 1, Figure['cruiser']);
+    Battleship.boat( 4, 6, Figure['destroyer']);
+    Battleship.boat( 6, 4, Figure['destroyer']);
+    Battleship.boat( 8, 1, Figure['destroyer']);
+    Battleship.boat( 1, 5, Figure['ship']);
+    Battleship.boat( 5, 2, Figure['ship']);
+    Battleship.boat( 5, 9, Figure['ship']);
+    Battleship.boat( 7, 7, Figure['ship']);
+    break;
+  case 2:
+    Battleship.boat( 6, 0, Figure['battleship']);
+    Battleship.boat( 2, 2, Figure['cruiser']);
+    Battleship.boat( 0, 9, Figure['cruiser']);
+    Battleship.boat( 7, 3, Figure['destroyer']);
+    Battleship.boat( 2, 5, Figure['destroyer']);
+    Battleship.boat( 7, 6, Figure['destroyer']);
+    Battleship.boat( 2, 0, Figure['ship']);
+    Battleship.boat( 5, 4, Figure['ship']);
+    Battleship.boat( 1, 7, Figure['ship']);
+    Battleship.boat( 5, 8, Figure['ship']);
+      break;
+  case 3:
+    Battleship.boat( 0, 9, Figure['battleship']);
+    Battleship.boat( 7, 0, Figure['cruiser']);
+    Battleship.boat( 6, 6, Figure['cruiser']);
+    Battleship.boat( 1, 2, Figure['destroyer']);
+    Battleship.boat( 5, 3, Figure['destroyer']);
+    Battleship.boat( 6, 8, Figure['destroyer']);
+    Battleship.boat( 4, 1, Figure['ship']);
+    Battleship.boat( 2, 4, Figure['ship']);
+    Battleship.boat( 2, 7, Figure['ship']);
+    Battleship.boat( 9, 9, Figure['ship']);
+    break;
+  case 4:
+    Battleship.boat( 6, 9, Figure['battleship']);
+    Battleship.boat( 0, 0, Figure['cruiser']);
+    Battleship.boat( 7, 0, Figure['cruiser']);
+    Battleship.boat( 4, 2, Figure['destroyer']);
+    Battleship.boat( 4, 5, Figure['destroyer']);
+    Battleship.boat( 4, 7, Figure['destroyer']);
+    Battleship.boat( 1, 4, Figure['ship']);
+    Battleship.boat( 7, 4, Figure['ship']);
+    Battleship.boat( 1, 7, Figure['ship']);
+    Battleship.boat( 8, 7, Figure['ship']);
+    break;
+  case 5:
+    Battleship.boat( 3, 1, Figure['battleship']);
+    Battleship.boat( 4, 4, Figure['cruiser']);
+    Battleship.boat( 7, 7, Figure['cruiser']);
+    Battleship.boat( 2, 6, Figure['destroyer']);
+    Battleship.boat( 4, 8, Figure['destroyer']);
+    Battleship.boat( 0, 0, Figure['destroyer']);
+    Battleship.boat( 1, 3, Figure['ship']);
+    Battleship.boat( 8, 3, Figure['ship']);
+    Battleship.boat( 1, 8, Figure['ship']);
+    Battleship.boat( 8, 9, Figure['ship']);
+    break;
+  case  6:
+    Battleship.boat( 2, 2, Figure['battleship']);
+    Battleship.boat( 6, 4, Figure['cruiser']);
+    Battleship.boat( 1, 6, Figure['cruiser']);
+    Battleship.boat( 8, 0, Figure['destroyer']);
+    Battleship.boat( 6, 8, Figure['destroyer']);
+    Battleship.boat( 3, 0, Figure['destroyer']);
+    Battleship.boat( 0, 1, Figure['ship']);
+    Battleship.boat( 1, 4, Figure['ship']);
+    Battleship.boat( 7, 6, Figure['ship']);
+    Battleship.boat( 2, 8, Figure['ship']);
+    break;
+  case  7:
+    Battleship.boat( 6, 5, Figure['battleship']);
+    Battleship.boat( 1, 1, Figure['cruiser']);
+    Battleship.boat( 1, 8, Figure['cruiser']);
+    Battleship.boat( 1, 3, Figure['destroyer']);
+    Battleship.boat( 2, 5, Figure['destroyer']);
+    Battleship.boat( 7, 7, Figure['destroyer']);
+    Battleship.boat( 6, 1, Figure['ship']);
+    Battleship.boat( 8, 2, Figure['ship']);
+    Battleship.boat( 4, 3, Figure['ship']);
+    Battleship.boat( 5, 8, Figure['ship']);
+    break;
+  case  8:
+    Battleship.boat( 0, 5, Figure['battleship']);
+    Battleship.boat( 6, 1, Figure['cruiser']);
+    Battleship.boat( 5, 6, Figure['cruiser']);
+    Battleship.boat( 2, 1, Figure['destroyer']);
+    Battleship.boat( 7, 3, Figure['destroyer']);
+    Battleship.boat( 2, 7, Figure['destroyer']);
+    Battleship.boat( 0, 0, Figure['ship']);
+    Battleship.boat( 2, 3, Figure['ship']);
+    Battleship.boat( 6, 8, Figure['ship']);
+    Battleship.boat( 9, 9, Figure['ship']);
+    break;
+  case  9:
+    Battleship.boat( 2, 7, Figure['battleship']);
+    Battleship.boat( 7, 0, Figure['cruiser']);
+    Battleship.boat( 1, 2, Figure['cruiser']);
+    Battleship.boat( 6, 3, Figure['destroyer']);
+    Battleship.boat( 8, 6, Figure['destroyer']);
+    Battleship.boat( 5, 9, Figure['destroyer']);
+    Battleship.boat( 9, 2, Figure['ship']);
+    Battleship.boat( 3, 4, Figure['ship']);
+    Battleship.boat( 5, 5, Figure['ship']);
+    Battleship.boat( 1, 9, Figure['ship']);
+    break;
+  case  0:
+    Battleship.boat( 5, 5, Figure['battleship']);
+    Battleship.boat( 2, 3, Figure['cruiser']);
+    Battleship.boat( 0, 8, Figure['cruiser']);
+    Battleship.boat( 0, 1, Figure['destroyer']);
+    Battleship.boat( 7, 2, Figure['destroyer']);
+    Battleship.boat( 2, 5, Figure['destroyer']);
+    Battleship.boat( 9, 0, Figure['ship']);
+    Battleship.boat( 4, 1, Figure['ship']);
+    Battleship.boat( 7, 7, Figure['ship']);
+    Battleship.boat( 5, 8, Figure['ship']);
+    break;
+  }
+
+}
+document.getElementById('info').innerHTML = "<p>10 hajó van, összesen 20 négyzeten elhelyezve. A 'talált' fekete színű, a 'mellé' kék. Jó szórakozást!<p>";
+
+
+ 
+</script>
+</body>
+</html>
